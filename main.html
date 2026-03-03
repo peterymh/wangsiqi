@@ -1,1 +1,499 @@
-<h1>hello world</h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王思琪的课表 🎉</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent: #4ade80;
+            --bg-start: #0f172a;
+            --bg-end: #312e81;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            color: var(--text-primary);
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e3a8a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media(min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .glass:hover {
+            transform: translateY(-2px);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #a855f7, #ec4899, #ef4444);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .time-display {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin: 1rem 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .date-display {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .status-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulseAnimation 2s infinite;
+        }
+
+        @keyframes pulseAnimation {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+            }
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            margin-top: 1rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #334155;
+            border: 2px solid #1e293b;
+            transition: all 0.3s;
+        }
+
+        .timeline-item.active::before {
+            background: #a855f7;
+            box-shadow: 0 0 10px #a855f7;
+            border-color: #f3e8ff;
+        }
+
+        .timeline-item.past::before {
+            background: #4ade80;
+        }
+
+        .time-badge {
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 10px;
+            color: #cbd5e1;
+        }
+
+        .class-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Schedule mini table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            text-align: center;
+        }
+
+        .schedule-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .current-day-col {
+            background: rgba(168, 85, 247, 0.2) !important;
+            font-weight: bold;
+        }
+
+        .has-class {
+            background: rgba(236, 72, 153, 0.2);
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="glass full-width header">
+            <h1>王思琪的专属课表</h1>
+            <div class="date-display" id="dateDisplay">加载中...</div>
+            <div class="time-display" id="timeDisplay">00:00:00</div>
+        </div>
+
+        <div class="glass status-card">
+            <h2><span class="pulse"></span>实时上课进度</h2>
+            <div id="currentClassInfo"
+                style="font-size: 1.2rem; font-weight: 500; margin-bottom: 10px; line-height: 1.5;">
+                分析中...
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="classProgressBar"></div>
+            </div>
+
+            <div class="timeline" id="todayTimeline">
+                <!-- Timeline injected via JS -->
+            </div>
+        </div>
+
+        <div class="glass">
+            <h2>🗓️ 学期进度条</h2>
+            <div style="margin-top: 1.5rem;">
+                <p style="margin-bottom: 8px; color: var(--text-secondary);">预计学期结束: 2026年6月29日</p>
+                <div style="font-size: 2rem; font-weight: 600; margin: 10px 0;">
+                    剩 <span style="color: #4ade80;" id="remClassesStr">--</span> 节课
+                </div>
+                <div class="progress-container" style="height: 16px;">
+                    <div class="progress-bar" id="semesterProgressBar"
+                        style="background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>已上: <span id="doneClassesStr">--</span></span>
+                    <span>总共: <span id="totalClassesStr">--</span> 节</span>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">周课表速览</h2>
+            <div style="overflow-x: auto;">
+                <table class="schedule-table" id="miniSchedule">
+                    <!-- Schedule injected via JS -->
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // System parsed schedule
+        const periods = [
+            { index: 1, name: '第1节', start: '07:30', end: '08:10' },
+            { index: 2, name: '第2节', start: '08:25', end: '09:05' },
+            { index: 3, name: '第3节', start: '09:30', end: '10:10' },
+            { index: 4, name: '第4节', start: '10:25', end: '11:05' },
+            { index: 5, name: '第5节', start: '11:20', end: '12:00' },
+            { index: 6, name: '第6节', start: '13:50', end: '14:30' },
+            { index: 7, name: '第7节', start: '14:55', end: '15:35' },
+            { index: 8, name: '第8节', start: '15:50', end: '16:30' },
+            { index: 9, name: '第9节', start: '16:40', end: '17:20' },
+            { index: 10, name: '晚1', start: '18:10', end: '18:50' },
+            { index: 11, name: '晚2', start: '19:00', end: '19:45' }
+        ];
+
+        const schedule = {
+            1: { 3: '8', 5: '1', 10: '/1' },
+            2: { 1: '2', 3: '24创1', 5: '1', 7: '13', 10: '24创一/', 11: '13/' },
+            3: { 1: '24创1', 3: '2', 5: '13', 10: '8/', 11: '2/' },
+            4: { 3: '1', 4: '8', 7: '2' },
+            5: { 6: '8', 8: '13' },
+            6: { 1: 'C创一', 2: 'D2', 3: 'A13 B8 C1' },
+            0: {}
+        };
+
+        const semesterStart = new Date('2026-03-02T00:00:00+08:00');
+        const semesterEnd = new Date('2026-06-29T23:59:59+08:00');
+
+        function updateTime() {
+            const now = new Date();
+
+            // Render Time
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('timeDisplay').innerText = `${h}:${m}:${s}`;
+
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+            document.getElementById('dateDisplay').innerText = dateStr;
+
+            // Current Class & Progress calculation
+            calculateCurrentClass(now);
+        }
+
+        function calculateCurrentClass(now) {
+            const todayClasses = schedule[now.getDay()] || {};
+            const timelineData = [];
+
+            let activeClass = null;
+            let nextClass = null;
+
+            periods.forEach(p => {
+                const className = todayClasses[p.index];
+                if (!className) return;
+
+                const [sh, sm] = p.start.split(':').map(Number);
+                const [eh, em] = p.end.split(':').map(Number);
+
+                const startTime = new Date(now); startTime.setHours(sh, sm, 0, 0);
+                const endTime = new Date(now); endTime.setHours(eh, em, 0, 0);
+
+                let status = 'future';
+                if (now > endTime) {
+                    status = 'past';
+                } else if (now >= startTime && now <= endTime) {
+                    status = 'active';
+                }
+
+                const item = { ...p, className, status, startTime, endTime };
+                timelineData.push(item);
+
+                if (status === 'active') activeClass = item;
+                if (status === 'future' && !nextClass) nextClass = item;
+            });
+
+            // Update Timeline DOM
+            const timelineDOM = document.getElementById('todayTimeline');
+            if (timelineData.length === 0) {
+                timelineDOM.innerHTML = '<div style="color: rgba(255,255,255,0.5);">今天没有课哦，好好休息吧～</div>';
+            } else {
+                timelineDOM.innerHTML = timelineData.map(c => `
+                <div class="timeline-item ${c.status}">
+                    <div><span class="time-badge">${c.start} - ${c.end}</span> <span class="class-name">${c.name} : ${c.className}</span></div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">状态: ${c.status === 'active' ? '<span style="color:#a855f7">进行中</span>' :
+                        c.status === 'past' ? '已结束' : '未开始'
+                    }</div>
+                </div>
+            `).join('');
+            }
+
+            // Update Status Info
+            const infoDOM = document.getElementById('currentClassInfo');
+            const progDOM = document.getElementById('classProgressBar');
+
+            if (activeClass) {
+                infoDOM.innerHTML = `<span style="color:#a855f7;">正在上课：</span>${activeClass.name} - ${activeClass.className}`;
+                const totalMs = activeClass.endTime - activeClass.startTime;
+                const elapsedMs = now - activeClass.startTime;
+                const perc = Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100));
+                progDOM.style.width = `${perc}%`;
+            } else if (nextClass) {
+                infoDOM.innerHTML = `🌟 课间休息 / 等待上课<br><span style="font-size:1rem; color:#94a3b8;">下一节：${nextClass.name} - ${nextClass.className} (${nextClass.start})</span>`;
+                progDOM.style.width = `0%`;
+            } else {
+                infoDOM.innerHTML = `🎉 今天的课程已全部结束！<br><span style="font-size:1rem; color:#94a3b8;">去享受美好的休息时光吧～</span>`;
+                progDOM.style.width = `100%`;
+            }
+        }
+
+        function initSemesterStats() {
+            let totalClasses = 0;
+            let remainingClasses = 0;
+
+            let current = new Date(semesterStart);
+            const now = new Date();
+
+            while (current <= semesterEnd) {
+                const dayClasses = schedule[current.getDay()] || {};
+                const keys = Object.keys(dayClasses);
+                if (keys.length > 0) {
+                    for (let k of keys) {
+                        totalClasses++;
+
+                        const p = periods.find(x => x.index == parseInt(k));
+                        if (p) {
+                            const [eh, em] = p.end.split(':').map(Number);
+                            const classEndTime = new Date(current);
+                            classEndTime.setHours(eh, em, 0, 0);
+
+                            if (classEndTime > now) {
+                                remainingClasses++;
+                            }
+                        }
+                    }
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            const doneClasses = totalClasses - remainingClasses;
+            const perc = (doneClasses / totalClasses) * 100;
+
+            document.getElementById('remClassesStr').innerText = remainingClasses;
+            document.getElementById('doneClassesStr').innerText = doneClasses;
+            document.getElementById('totalClassesStr').innerText = totalClasses;
+            document.getElementById('semesterProgressBar').style.width = `${perc}%`;
+        }
+
+        function renderMiniSchedule() {
+            const days = ['一', '二', '三', '四', '五', '六', '日'];
+            const dayMap = [1, 2, 3, 4, 5, 6, 0];
+            const nowDay = new Date().getDay();
+
+            let html = '<tr><th>节次</th>' + days.map((d, i) => `<th class="${dayMap[i] === nowDay ? 'current-day-col' : ''}">${d}</th>`).join('') + '</tr>';
+
+            // We only render rows that have at least one class
+            const validPeriods = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+            validPeriods.forEach(p => {
+                const pInfo = periods.find(x => x.index === p);
+                html += `<tr><td>${pInfo ? pInfo.name.replace('节', '') : p}</td>`;
+                dayMap.forEach(d => {
+                    const isCurrent = d === nowDay;
+                    const cellVal = (schedule[d] && schedule[d][p]) || '';
+                    const cellClass = cellVal ? 'has-class' : '';
+                    html += `<td class="${isCurrent ? 'current-day-col' : ''} ${cellClass}">${cellVal}</td>`;
+                });
+                html += `</tr>`;
+            });
+            document.getElementById('miniSchedule').innerHTML = html;
+        }
+
+        // Init
+        initSemesterStats();
+        renderMiniSchedule();
+        updateTime();
+        setInterval(updateTime, 1000);
+
+    </script>
+</body>
+
+</html>
